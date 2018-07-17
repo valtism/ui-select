@@ -657,6 +657,23 @@ describe('ui-select tests', function () {
     clickMatch(el3);
     expect(isDropdownOpened(el3)).toEqual(true);
   });
+  
+  it('should be disabled when inside a disabled fieldset', function() {
+    var fieldset = angular.element("<fieldset></fieldset>");
+    var e1 = createUiSelect({theme: 'select2'});
+    var $select = e1.scope().$select;
+
+    fieldset.append(e1);
+    expect($select.disabled).toEqual(false);
+
+    fieldset.prop('disabled', true);
+    scope.$digest();
+    expect($select.disabled).toEqual(true);
+
+    fieldset.prop('disabled', false);
+    scope.$digest();
+    expect($select.disabled).toEqual(false);
+  });
 
   it('should allow decline tags when tagging function returns null', function () {
     scope.taggingFunc = function (name) {
@@ -1948,6 +1965,23 @@ describe('ui-select tests', function () {
 
       ctrl.setItemsFn(); // updateGroups
       expect(ctrl.items).toEqual([]);
+    });
+
+    it('should be disabled when inside a disabled fieldset', function() {
+      var fieldset = angular.element("<fieldset></fieldset>");
+      var e1 = createUiSelectMultiple({theme: 'select2'});
+      var $select = e1.scope().$select;
+
+      fieldset.append(e1);
+      expect($select.disabled).toEqual(false);
+
+      fieldset.prop('disabled', true);
+      scope.$digest();
+      expect($select.disabled).toEqual(true);
+
+      fieldset.prop('disabled', false);
+      scope.$digest();
+      expect($select.disabled).toEqual(false);
     });
 
     it('should render initial state', function () {

@@ -101,8 +101,27 @@ uis.directive('uiSelect',
 
         attrs.$observe('disabled', function() {
           // No need to use $eval() (thanks to ng-disabled) since we already get a boolean instead of a string
-          $select.disabled = attrs.disabled !== undefined ? attrs.disabled : false;
+          $select.disabledFlag = attrs.disabled !== undefined ? attrs.disabled : false;
+          $select.disabled = $select.disabledFlag || $select.disabledSelector;
         });
+
+        // When inside a disabled fieldset, disabledWatch element will be disabled
+        var disabledWatch = angular.element("<input type='hidden' class='ui-select-disable-watch' aria-label=''></input>");
+        element.append(disabledWatch);
+
+        // Watch the disabled flag on disabledWatch, and set $select.disabled.
+        scope.$watch(
+          function () { 
+            if (disabledWatch.is) { 
+              return disabledWatch.is(":disabled"); // use jquery if available
+            } 
+            return !!element[0].querySelector('.ui-select-disable-watch:disabled');
+          }, 
+          function (value) {
+            $select.disabledSelector = value;
+            $select.disabled = $select.disabledFlag || $select.disabledSelector;
+          }
+        );
 
         attrs.$observe('resetSearchInput', function() {
           // $eval() is needed otherwise we get a string instead of a boolean
